@@ -9,7 +9,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["jest", "node"],
+    "types": ["jest", "node", "express"],
     "isolatedModules": true,
   },
   "include": ["src", "tests"],
