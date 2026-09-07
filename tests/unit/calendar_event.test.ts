@@ -1,7 +1,11 @@
 import { CalendarEvent } from "../../src/domain/entity/calendar_event";
 import {
+  InvalidAlarmMinutesBeforeError,
+  InvalidEmailError,
   InvalidEventDateError,
   InvalidEventTitleError,
+  InvalidRecurrenceError,
+  InvalidTimezoneError,
 } from "../../src/domain/error/calendar_event_error";
 
 describe("CalendarEvent", () => {
@@ -110,6 +114,109 @@ describe("CalendarEvent", () => {
     });
 
     expect(event.id).toBe(idExistente);
+  });
+
+
+  it("deve criar um evento com fuso horário (timezone) específico", () => {
+    const event = CalendarEvent.create({
+      title: "Reunião Regional",
+      start: new Date("2026-09-10T10:00:00Z"),
+      end: new Date("2026-09-10T11:00:00Z"),
+      timezone: "America/Sao_Paulo",
+    });
+
+    expect(event.timezone).toBe("America/Sao_Paulo");
+  });
+
+  it("deve dar erro ao criar um evento com fuso horário inválido", () => {
+    expect(() => {
+      CalendarEvent.create({
+        title: "Reunião com Fuso Inválido",
+        start: new Date("2026-09-10T10:00:00Z"),
+        end: new Date("2026-09-10T11:00:00Z"),
+        timezone: "Fuso/Horario_Invalido",
+      });
+    }).toThrow(InvalidTimezoneError);
+  });
+
+  it("deve criar um evento com regra de recorrência (recurrence rule) válida", () => {
+    const event = CalendarEvent.create({
+      title: "Reunião Recorrente",
+      start: new Date("2026-09-10T10:00:00Z"),
+      end: new Date("2026-09-10T11:00:00Z"),
+      timezone: "America/Sao_Paulo",
+      recurrence: "FREQ=WEEKLY;COUNT=5",
+    });
+
+    expect(event.recurrence).toBe("FREQ=WEEKLY;COUNT=5");
+  });
+
+  it("deve dar erro ao criar um evento com regra de recorrência inválida", () => {
+    expect(() => {
+      CalendarEvent.create({
+        title: "Reunião Semanal",
+        start: new Date("2026-09-10T10:00:00Z"),
+        end: new Date("2026-09-10T11:00:00Z"),
+        recurrence: "repetir toda terça", 
+      });
+    }).toThrow(InvalidRecurrenceError);
+  });
+
+  it("deve criar um evento com alarme prévio em minutos", () => {
+    const event = CalendarEvent.create({
+      title: "Reunião Importante",
+      start: new Date("2026-09-10T10:00:00Z"),
+      end: new Date("2026-09-10T11:00:00Z"),
+      alarmMinutesBefore: 15,
+    });
+
+    expect(event.alarmMinutesBefore).toBe(15);
+  });
+
+  it("deve dar erro se os minutos do alarme forem negativos", () => {
+    expect(() => {
+      CalendarEvent.create({
+        title: "Reunião",
+        start: new Date("2026-09-10T10:00:00Z"),
+        end: new Date("2026-09-10T11:00:00Z"),
+        alarmMinutesBefore: -5,
+      });
+    }).toThrow(InvalidAlarmMinutesBeforeError);
+  });
+
+  it("deve criar um evento com organizador e convidados", () => {
+    const event = CalendarEvent.create({
+      title: "Reunião de Alinhamento",
+      start: new Date("2026-09-10T10:00:00Z"),
+      end: new Date("2026-09-10T11:00:00Z"),
+      organizer: "pedro@empresa.com",
+      attendees: ["dev1@empresa.com", "dev2@empresa.com"],
+    });
+
+    expect(event.organizer).toBe("pedro@empresa.com");
+    expect(event.attendees?.length).toBe(2);
+  });
+
+  it("deve dar erro se o e-mail do organizador for inválido", () => {
+    expect(() => {
+      CalendarEvent.create({
+        title: "Reunião",
+        start: new Date("2026-09-10T10:00:00Z"),
+        end: new Date("2026-09-10T11:00:00Z"),
+        organizer: "pedro.empresa.com", 
+      });
+    }).toThrow(InvalidEmailError);
+  });
+
+  it("deve dar erro se o e-mail de um convidado for inválido", () => {
+    expect(() => {
+      CalendarEvent.create({
+        title: "Reunião",
+        start: new Date("2026-09-10T10:00:00Z"),
+        end: new Date("2026-09-10T11:00:00Z"),
+        attendees: ["dev1@empresa.com", "email-invalido"], 
+      });
+    }).toThrow(InvalidEmailError);
   });
 
 });

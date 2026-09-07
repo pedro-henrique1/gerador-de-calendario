@@ -54,4 +54,52 @@ describe("IcsGeneratorService", () => {
     expect(result).not.toContain("DESCRIPTION:");
     expect(result).not.toContain("LOCATION:");
   });
+
+  it("deve incluir regras de recorrência (RRULE)", () => {
+    const event = CalendarEvent.create({
+      title: "Reunião Diária",
+      start: new Date("2026-09-10T10:00:00Z"),
+      end: new Date("2026-09-10T11:00:00Z"),
+      recurrence: "FREQ=DAILY;COUNT=3",
+    });
+
+    const generator = new IcsGeneratorService();
+    const result = generator.generate(event);
+
+    expect(result).toContain("RRULE:FREQ=DAILY;COUNT=3");
+  });
+
+  it("deve incluir bloco de alarme (VALARM)", () => {
+    const event = CalendarEvent.create({
+      title: "Reunião com Alarme",
+      start: new Date("2026-09-10T10:00:00Z"),
+      end: new Date("2026-09-10T11:00:00Z"),
+      alarmMinutesBefore: 15,
+    });
+
+    const generator = new IcsGeneratorService();
+    const result = generator.generate(event);
+
+    expect(result).toContain("BEGIN:VALARM");
+    expect(result).toContain("ACTION:DISPLAY");
+    expect(result).toContain("DESCRIPTION:Lembrete");
+    expect(result).toContain("TRIGGER:-PT15M");
+    expect(result).toContain("END:VALARM");
+  });
+
+  it("deve incluir organizador e convidados", () => {
+    const event = CalendarEvent.create({
+      title: "Reunião de Equipe",
+      start: new Date("2026-09-10T10:00:00Z"),
+      end: new Date("2026-09-10T11:00:00Z"),
+      organizer: "pedro@empresa.com",
+      attendees: ["dev@empresa.com"],
+    });
+
+    const generator = new IcsGeneratorService();
+    const result = generator.generate(event);
+
+    expect(result).toContain("ORGANIZER:mailto:pedro@empresa.com");
+    expect(result).toContain("ATTENDEE:mailto:dev@empresa.com");
+  });
 });

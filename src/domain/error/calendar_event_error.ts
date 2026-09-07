@@ -11,3 +11,33 @@ export class InvalidEventDateError extends Error {
     this.name = "InvalidEventDateError";
   }
 }
+
+export class InvalidTimezoneError extends Error {
+  constructor(message: string = "O fuso horário fornecido é inválido.") {
+    super(message);
+    this.name = "InvalidTimezoneError";
+  }
+}
+
+export class InvalidRecurrenceError extends Error {
+  constructor(message: string = "A regra de recorrência fornecida é inválida.") {
+    super(message);
+    this.name = "InvalidRecurrenceError";
+  }
+}
+
+export class InvalidAlarmMinutesBeforeError extends Error {
+  constructor(message: string = "O valor de minutos antes do alarme é inválido.") {
+    super(message);
+    this.name = "InvalidAlarmMinutesBeforeError";
+  }
+}
+
+
+export class InvalidEmailError extends Error {
+  constructor(message: string = "O endereço de e-mail fornecido é inválido.") {
+    super(message);
+    this.name = "InvalidEmailError";
+  }
+}
+
