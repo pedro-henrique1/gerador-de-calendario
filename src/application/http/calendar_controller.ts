@@ -1,3 +1,5 @@
+import "reflect-metadata";
+import { inject, injectable } from "tsyringe";
 import { Request, Response } from "express";
 import { GenerateIcsUseCase } from "../usecases/generate_ics_usecase";
 import { 
@@ -8,11 +10,10 @@ import {
   InvalidAlarmMinutesBeforeError, 
   InvalidEmailError 
 } from "../../domain/error/calendar_event_error";
-import { injectable } from "tsyringe";
 
 @injectable()
 export class CalendarController {
-  constructor(private readonly useCase: GenerateIcsUseCase) {}
+  constructor(@inject(GenerateIcsUseCase) private readonly useCase: GenerateIcsUseCase) {}
 
   async handle(req: Request, res: Response): Promise<Response | void> {
     try {

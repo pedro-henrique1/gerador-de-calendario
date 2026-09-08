@@ -3,21 +3,39 @@ import type { CalendarEvent } from "../../domain/entity/calendar_event";
 
 export interface IcsGenerator {
   generate(event: CalendarEvent): string;
+  generateBatch(events: CalendarEvent[]): string;
 }
 
 @injectable()
 export class IcsGeneratorService implements IcsGenerator {
+  
   generate(event: CalendarEvent): string {
+    return this.generateBatch([event]);
+  }
+
+  generateBatch(events: CalendarEvent[]): string {
+    const eventLines = events.map(event => this.buildEventLines(event)).flat();
+
+    const lines = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//gerador-calendario//EN",
+      ...eventLines,
+      "END:VCALENDAR",
+    ];
+
+    return `${lines.join("\r\n")}\r\n`;
+  }
+
+  private buildEventLines(event: CalendarEvent): string[] {
     const hasTz = !!event.timezone;
     const start = this.formatDate(event.start, hasTz);
     const end = this.formatDate(event.end, hasTz);
 
     const startPrefix = hasTz ? `DTSTART;TZID=${event.timezone}` : "DTSTART";
     const endPrefix = hasTz ? `DTEND;TZID=${event.timezone}` : "DTEND";
-    const lines = [
-      "BEGIN:VCALENDAR",
-      "VERSION:2.0",
-      "PRODID:-//gerador-calendario//EN",
+
+    return [
       "BEGIN:VEVENT",
       `UID:${this.escape(event.id)}`,
       `DTSTAMP:${this.formatDate(new Date())}`,
@@ -43,10 +61,7 @@ export class IcsGeneratorService implements IcsGenerator {
           ]
         : []),
       "END:VEVENT",
-      "END:VCALENDAR",
     ];
-
-    return `${lines.join("\r\n")}\r\n`;
   }
 
   private formatDate(date: Date, hasTimezone: boolean = false): string {

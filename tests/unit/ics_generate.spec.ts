@@ -103,4 +103,45 @@ describe("IcsGeneratorService", () => {
     expect(result).toContain("ORGANIZER:mailto:pedro@empresa.com");
     expect(result).toContain("ATTENDEE:mailto:dev@empresa.com");
   });
+
+
+  it("deve gerar um arquivo ICS contendo múltiplos eventos", () => {
+    
+    const event1 = CalendarEvent.create({
+      title: "Reunião de Alinhamento",
+      start: new Date("2026-09-10T10:00:00Z"),
+      end: new Date("2026-09-10T11:00:00Z"),
+    });
+
+    const event2 = CalendarEvent.create({
+      title: "Sprint Review",
+      start: new Date("2026-09-11T14:00:00Z"),
+      end: new Date("2026-09-11T15:00:00Z"),
+    });
+
+    const generator = new IcsGeneratorService();
+    const result = generator.generateBatch([event1, event2]);
+
+    expect(result).toContain("BEGIN:VCALENDAR");
+    expect(result).toContain("SUMMARY:Reunião de Alinhamento");
+    expect(result).toContain("SUMMARY:Sprint Review");
+    expect(result.match(/BEGIN:VEVENT/g)?.length).toBe(2);
+  });
+
+  it("deve escapar caracteres especiais no título/descrição e utilizar quebras de linha CRLF (\\r\\n)", () => {
+    const event = CalendarEvent.create({
+      title: "Reunião, com vírgula e ponto-e-vírgula;",
+      start: new Date("2026-09-10T10:00:00Z"),
+      end: new Date("2026-09-10T11:00:00Z"),
+      description: "Linha 1\nLinha 2 com \\barra invertida",
+    });
+
+    const generator = new IcsGeneratorService();
+    const result = generator.generate(event);
+
+    expect(result).toContain("\r\n");
+
+    expect(result).toContain("SUMMARY:Reunião\\, com vírgula e ponto-e-vírgula\\;");
+    expect(result).toContain("DESCRIPTION:Linha 1\\nLinha 2 com \\\\barra invertida");
+  });
 });

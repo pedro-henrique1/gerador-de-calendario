@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { inject, injectable } from "tsyringe";
 import { CalendarEvent, CreateCalendarEvent } from "../../domain/entity/calendar_event";
 import type { IcsGenerator } from "../../infrastructure/ics/generate_ics";
