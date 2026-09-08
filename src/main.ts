@@ -1,19 +1,27 @@
+import "reflect-metadata";
 import express from "express";
+import { container } from "tsyringe";
 import { CalendarController } from "./application/http/calendar_controller";
-import { GenerateIcsUseCase } from "./application/usecases/generate_ics_usecase";
-import { IcsGeneratorService } from "./infrastructure/ics/generate_ics";
+import { IcsGeneratorService, IcsGenerator } from "./infrastructure/ics/generate_ics";
+import { createCalendarSchema } from "./middleware/calendar_schema";
+import { validateSchema } from "./middleware/validate_middleware";
+
+container.register<IcsGenerator>("IcsGenerator", {
+  useClass: IcsGeneratorService,
+});
 
 const app = express();
 app.use(express.json());
 
-const generator = new IcsGeneratorService();
-const useCase = new GenerateIcsUseCase(generator);
-const controller = new CalendarController(useCase);
+const controller = container.resolve(CalendarController);
 
-app.post("/api/v1/calendar", (req, res) => controller.handle(req, res));
+app.post(
+  "/api/v1/calendar", 
+  validateSchema(createCalendarSchema), 
+  (req, res) => controller.handle(req, res)
+);
 
 const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor de calendário rodando na porta ${PORT}`);
+  console.log(`🚀 Servidor com TSyringe rodando na porta ${PORT}`);
 });

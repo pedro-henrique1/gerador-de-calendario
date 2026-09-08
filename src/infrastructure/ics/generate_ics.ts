@@ -1,9 +1,11 @@
+import { injectable } from "tsyringe";
 import type { CalendarEvent } from "../../domain/entity/calendar_event";
 
 export interface IcsGenerator {
   generate(event: CalendarEvent): string;
 }
 
+@injectable()
 export class IcsGeneratorService implements IcsGenerator {
   generate(event: CalendarEvent): string {
     const hasTz = !!event.timezone;

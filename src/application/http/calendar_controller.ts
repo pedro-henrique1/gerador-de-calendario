@@ -8,7 +8,9 @@ import {
   InvalidAlarmMinutesBeforeError, 
   InvalidEmailError 
 } from "../../domain/error/calendar_event_error";
+import { injectable } from "tsyringe";
 
+@injectable()
 export class CalendarController {
   constructor(private readonly useCase: GenerateIcsUseCase) {}
 

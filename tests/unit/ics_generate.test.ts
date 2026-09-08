@@ -1,3 +1,4 @@
+import "reflect-metadata"
 import { CalendarEvent } from "../../src/domain/entity/calendar_event";
 import { IcsGeneratorService } from "../../src/infrastructure/ics/generate_ics";
 
