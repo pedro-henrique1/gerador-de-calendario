@@ -2,6 +2,15 @@
 
 API REST desenvolvida em **TypeScript** utilizando **TDD (Test-Driven Development)**, Clean Architecture com separação de camadas, Injeção de Dependências com **TSyringe**, validações robustas com **Zod**, geração de arquivos iCalendar (`.ics`) em conformidade com a **RFC 5545** e disparo de convites por e-mail via **Nodemailer**.
 
+
+
+![CI](https://img.shields.io/badge/CI-Passing-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white)
+![Coverage](https://img.shields.io/badge/Coverage-%3E97%25-brightgreen?style=for-the-badge&logo=jest&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![Jest](https://img.shields.io/badge/Jest-C21325?style=for-the-badge&logo=jest&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
+![Nodemailer](https://img.shields.io/badge/Nodemailer-339933?style=for-the-badge&logo=mail.ru&logoColor=white)
 ---
 
 ## 🎥 Demonstração
